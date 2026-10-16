@@ -1,0 +1,69 @@
+# Digital Forensics: UDP Stream Analysis — SANReN CSC 2025
+
+## 1. Overview
+
+During the SANReN Cyber Security Challenge (CSC) 2025, I investigated network traffic using Wireshark as part of a digital forensics exercise. I examined a UDP stream to understand the packet exchange and investigate whether the captured traffic contained information relevant to the challenge.
+
+This investigation helped me explore packet inspection, transport-layer protocols and Python-assisted analysis of packet captures.
+
+## 2. Evidence and observations
+
+I used Wireshark to inspect a UDP stream with the display filter:
+
+`udp.stream eq 0`
+
+The screenshot shows repeated UDP packets with the following characteristics:
+
+- **Source IP:** `127.0.0.1`
+- **Destination IP:** `127.0.0.1`
+- **Source port:** `12345`
+- **Destination port:** `54321`
+- **Displayed packet length:** 29 bytes
+- **UDP payload length:** 1 byte, as indicated by `Len=1`
+
+Both endpoints use the loopback address, indicating that the displayed traffic is local to the host represented in the capture. The repeated packets and short payloads prompted further inspection of the stream.
+
+These observations alone do not establish that the traffic was malicious or that it contained a hidden flag.
+
+## 3. Python-assisted packet analysis
+
+I used a Python script, `packet_decrypt.py`, designed to inspect a packet capture and search TCP and UDP payloads for potential CTF flag patterns.
+
+The script uses Scapy to read packets and Python's regular-expression and Base64 libraries to examine payload data.
+
+Its intended workflow is to:
+
+1. Read packets from a capture file.
+2. Extract TCP or UDP payloads.
+3. Attempt to interpret payloads as UTF-8 text.
+4. Search for candidate Base64-encoded strings and decode them.
+5. Match potential flag structures using a regular expression.
+6. Collect distinct matches and write them to an output file.
+
+The script is intended to supplement manual Wireshark inspection by automating some repetitive searches. A matching string would still need to be validated against the challenge context.
+
+## 4. Tools and techniques
+
+- **Wireshark:** UDP stream inspection and packet filtering.
+- **Python:** Automation of payload inspection.
+- **Scapy:** Packet capture reading and transport-layer payload extraction.
+- **Regular expressions:** Searching for candidate CTF flag patterns.
+- **Base64 decoding:** Testing for potentially encoded text.
+
+## 5. Lessons learned
+
+This exercise strengthened my understanding of how packet captures can be inspected at the transport layer and how scripting can support a digital forensics workflow.
+
+It also highlighted the importance of distinguishing observable evidence from assumptions. A UDP stream may contain ordinary application data, encoded text or challenge-specific information; its purpose cannot be established from the protocol alone.
+
+A useful next step is to compare the script's output with the original packet payloads in Wireshark and document any verified findings.
+
+## 6. Limitations
+
+The available screenshot shows packet metadata but does not expose the payload contents. Without the original capture file and recorded script output, I cannot confirm whether the stream contained encoded information or whether the script successfully recovered a flag.
+
+The script is a prototype for candidate extraction, not a complete forensic analysis tool. Its matching and decoding logic requires validation before its output can be treated as reliable evidence.
+
+## 7. Conclusion
+
+This investigation demonstrates my practical exposure to network traffic inspection, UDP analysis and Python-assisted forensic techniques during the SANReN CSC 2025. It represents part of my ongoing development in cybersecurity, with a focus on understanding evidence and using automation to support analysis.
